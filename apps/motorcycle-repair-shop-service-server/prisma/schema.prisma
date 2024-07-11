@@ -1,0 +1,69 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Motorcycle {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  model     String?
+  year      Int?
+  make      String?
+  repairs   Repair[]
+  customers Customer[]
+  owner     String?
+}
+
+model Customer {
+  id           String      @id @default(cuid())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  name         String?
+  email        String?
+  phoneNumber  String?
+  address      String?
+  motorcycle   Motorcycle? @relation(fields: [motorcycleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  motorcycleId String?
+}
+
+model Mechanic {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  name           String?
+  phoneNumber    String?
+  email          String?
+  specialization String?
+  repairs        Repair[]
+}
+
+model PartsUsed {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  partName   String?
+  partNumber String?
+  quantity   Int?
+  cost       Float?
+  repair     Repair?  @relation(fields: [repairId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  repairId   String?
+}
+
+model Repair {
+  id           String      @id @default(cuid())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  date         DateTime?
+  cost         Float?
+  description  String?
+  motorcycle   Motorcycle? @relation(fields: [motorcycleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  motorcycleId String?
+  mechanic     Mechanic?   @relation(fields: [mechanicId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  mechanicId   String?
+  partsUseds   PartsUsed[]
+}
